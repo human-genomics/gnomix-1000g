@@ -23,13 +23,14 @@ AUTOSOMES = list(range(1, 23))
 
 # Gnomix pretrained model labels, in model order (checked against each model).
 ANCESTRIES = ["EUR", "EAS", "NAT", "AFR", "SAS", "AHG", "OCE", "WAS"]
+# Names as in the Gnomix paper (Hilmarsson et al., Nat Commun 2026).
 ANCESTRY_NAMES = {
     "EUR": "European",
     "EAS": "East Asian",
-    "NAT": "Native American",
-    "AFR": "Sub-Saharan African",
+    "NAT": "Indigenous American",
+    "AFR": "African",
     "SAS": "South Asian",
-    "AHG": "African hunter-gatherer",
+    "AHG": "African Hunter-Gatherer",
     "OCE": "Oceanian",
     "WAS": "West Asian",
 }
@@ -48,7 +49,7 @@ ANCESTRY_COLORS = {
     "UNK": "#BDBDBD",
 }
 
-# Admixed populations. Their karyograms show EUR and WAS as one "West Eurasian"
+# Admixed populations. Their karyograms show EUR and WAS as one "European + West Asian"
 # category, and the trio benchmark groups them apart from their super-population.
 ADMIXED_POPULATIONS = ["ACB", "ASW", "CLM", "MXL", "PEL", "PUR"]
 GROUPS = {"ACB": "AFR-American", "ASW": "AFR-American",

@@ -65,6 +65,16 @@ def run(chroms: list[int]) -> None:
                "`validation/trio_benchmark_summary.tsv`.", "",
                t.to_markdown(index=False, floatfmt=".3f"), "",
                "![trio benchmark](validation/trio_benchmark.png)", ""]
+    if (vdir / "pedigree_phase_summary.tsv").exists():
+        ped = pd.read_csv(vdir / "pedigree_phase_summary.tsv", sep="\t")
+        md += ["## Which published phases are pedigree-exact", "",
+               f"Per parent-child pair (chromosomes {ped.chromosomes.iloc[0]}): phase switches, at the model SNPs, "
+               "that no meiosis explains. Child: switches of the haplotype "
+               "carrying the parent's allele (exact phase: 0). Parent: switches of the haplotype carrying the "
+               "transmitted allele (exact phase: the crossovers, `expected_crossovers`). Trio children keep "
+               "their published phase; everyone else follows the Gnofix decision. Per pair: "
+               "`validation/pedigree_phase_pairs.tsv`.", "",
+               ped.to_markdown(index=False, floatfmt=".3g"), ""]
     if (vdir / "COMPARISON.md").exists():
         body = (vdir / "COMPARISON.md").read_text().split("\n", 1)[1]
         md += ["## Comparison with published results", body, "",

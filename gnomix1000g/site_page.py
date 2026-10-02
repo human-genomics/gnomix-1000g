@@ -54,16 +54,20 @@ main { min-height:390px; padding-bottom:48px; }
 table { border-collapse:collapse; width:100%; font-size:13px; font-variant-numeric:tabular-nums; white-space:nowrap; }
 caption { text-align:left; color:var(--muted); font-size:12px; padding:0 0 12px; caption-side:bottom; padding-top:12px; }
 th,td { text-align:left; padding:12px 13px; border-bottom:1px solid var(--rule); }
-th:first-child,td:first-child { padding-left:0; }
-th:last-child,td:last-child { padding-right:0; }
-th { background:var(--soft); font-weight:600; font-size:11px; color:var(--muted); letter-spacing:.035em; }
-th:first-child { padding-left:12px; }
-th:last-child { padding-right:12px; }
+th:first-child,td:first-child { padding-left:12px; }
+th:last-child,td:last-child { padding-right:12px; }
+th { background:var(--soft); font-weight:600; font-size:12px; line-height:1.35; color:var(--muted); vertical-align:bottom; white-space:normal; }
 th.num,td.num { text-align:right; }
-.sort-head { color:inherit; background:none; border:0; padding:0; font:inherit; letter-spacing:inherit; }
-.sort-head::after { content:' ↕'; opacity:.4; }
-th[aria-sort=ascending] .sort-head::after { content:' ↑'; opacity:1; }
-th[aria-sort=descending] .sort-head::after { content:' ↓'; opacity:1; }
+th.num { min-width:96px; }
+.sort-head { display:inline-flex; align-items:center; gap:7px; color:inherit; background:none; border:0; padding:4px 0; margin:-4px 0; font:inherit; text-align:inherit; border-radius:2px; }
+th.num .sort-head { text-align:right; }
+.sort-head:hover, th[aria-sort=ascending] .sort-head, th[aria-sort=descending] .sort-head { color:var(--ink); }
+.plain-head { display:inline-flex; align-items:center; min-height:20px; }
+.sort-icon { flex:none; width:14px; height:20px; fill:currentColor; }
+.sort-icon path { opacity:.4; }
+.sort-head:hover .sort-icon path { opacity:.55; }
+th[aria-sort=ascending] .sort-icon .up, th[aria-sort=descending] .sort-icon .down { opacity:1; fill:var(--accent); }
+th[aria-sort=ascending] .sort-icon .down, th[aria-sort=descending] .sort-icon .up { opacity:.12; }
 tbody tr:hover { background:var(--hover); }
 .sample-link { font:600 13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; color:var(--accent); text-decoration:none; }
 .sample-link:hover { text-decoration:underline; }
@@ -128,7 +132,7 @@ dialog::backdrop { background:rgba(0,0,0,.65); }
 </section>
 <main id="list"></main>
 <footer><div class="footer-row">
- <p>Pretrained <a href="https://github.com/AI-sandbox/gnomix">Gnomix</a> calls. Gnofix is used for unrelated samples in the six admixed populations; family members retain their published, pedigree-informed phase.</p>
+ <p>Pretrained <a href="https://github.com/AI-sandbox/gnomix">Gnomix</a> calls. Gnofix is used for every sample of the six admixed populations except trio children, who retain their published phase (made with both parents).</p>
  <a href="RELEASE_URL">Download all outputs ↗</a>
 </div></footer>
 </div>
@@ -139,12 +143,19 @@ dialog::backdrop { background:rgba(0,0,0,.65); }
 <script src="data.js"></script>
 <script>
 const D = window.DATA, byId = Object.fromEntries(D.samples.map(s => [s.id, s]));
-const A = D.anc.flatMap((a,i) => {
- if (a.code === 'WAS') return [];
- if (a.code === 'EUR') return [{code:'Western Eurasian', name:'European + West Asian (EUR + WAS)', indices:[i,D.anc.findIndex(a => a.code === 'WAS')]}];
- return [{...a, indices:[i]}];
-});
-function fraction(s,i) { return A[i].indices.reduce((total,index) => total + s.a[index], 0); }
+// European and West Asian are shown separately for the EUR and SAS superpopulations, combined elsewhere.
+const SPLIT_EUR_WAS = new Set(['EUR','SAS']);
+const COLUMN_ORDER = ['AFR','AHG','EUR','WAS','SAS','EAS','NAT','OCE'];
+function columnsFor(sup) {
+ const was = D.anc.findIndex(a => a.code === 'WAS');
+ return COLUMN_ORDER.map(code => [D.anc.find(a => a.code === code), D.anc.findIndex(a => a.code === code)]).flatMap(([a,i]) => {
+  if (SPLIT_EUR_WAS.has(sup)) return [{label:a.name, codes:a.code, indices:[i]}];
+  if (a.code === 'WAS') return [];
+  if (a.code === 'EUR') return [{label:'European + West Asian', codes:'EUR + WAS', indices:[i,was]}];
+  return [{label:a.name, codes:a.code, indices:[i]}];
+ });
+}
+function fraction(s,col) { return col.indices.reduce((total,index) => total + s.a[index], 0); }
 const $ = id => document.getElementById(id);
 const supSel = $('sup'), popSel = $('pop');
 const admixed = new Set(['ACB','ASW','CLM','MXL','PEL','PUR']);
@@ -161,7 +172,7 @@ function family(s) {
 function phase(s) { return s.fix ? 'Applied' : 'Not applied'; }
 function phaseDetail(s) {
  if (s.fix) return 'Gnofix applied';
- return s.par.length || s.kids.length ? 'Gnofix not applied · pedigree-informed phase' : 'Gnofix not applied · population policy';
+ return s.par.length === 2 ? 'Gnofix not applied · trio child, phased with both parents' : 'Gnofix not applied · population policy';
 }
 function setTheme(theme) {
  document.documentElement.dataset.theme = theme;
@@ -176,9 +187,10 @@ function fillPops() {
  D.pops.filter(p => p.sup === supSel.value).forEach(p => popSel.add(new Option(p.pop + ' — ' + p.name, p.pop)));
  popSel.disabled = !supSel.value;
 }
+const SORT_ICON = '<svg class="sort-icon" viewBox="0 0 14 20" width="14" height="20" aria-hidden="true"><path class="up" d="M7 1.5 13.5 8.5H.5z"/><path class="down" d="M7 18.5.5 11.5h13z"/></svg>';
 function heading(key, label, numeric=false, title='') {
  const sorted = state.sort === key ? (state.desc ? 'descending' : 'ascending') : 'none';
- return '<th scope="col"' + (numeric ? ' class="num"' : '') + ' aria-sort="' + sorted + '"><button class="sort-head" data-key="' + key + '" title="' + escapeHTML(title || 'Sort by ' + label) + '">' + escapeHTML(label) + '</button></th>';
+ return '<th scope="col"' + (numeric ? ' class="num"' : '') + ' aria-sort="' + sorted + '"><button class="sort-head" data-key="' + key + '" title="' + escapeHTML(title || 'Sort by ' + label) + '"><span>' + escapeHTML(label) + '</span>' + SORT_ICON + '</button></th>';
 }
 function render() {
  const pop = popSel.value, meta = D.pops.find(p => p.pop === pop);
@@ -190,27 +202,28 @@ function render() {
  }
  const population = D.samples.filter(s => s.pop === pop);
  const q = $('q').value.trim().toUpperCase();
+ const cols = columnsFor(meta.sup);
  const rows = population.filter(s => (!q || s.id.toUpperCase().includes(q)) && (!$('hide-trios').checked || !family(s).some(r => r.startsWith('Trio'))));
  rows.sort((x,y) => {
-  const c = state.sort === 'id' ? x.id.localeCompare(y.id) : fraction(x,+state.sort.slice(1)) - fraction(y,+state.sort.slice(1));
+  const c = state.sort === 'id' ? x.id.localeCompare(y.id) : fraction(x,cols[+state.sort.slice(1)]) - fraction(y,cols[+state.sort.slice(1)]);
   return (state.desc ? -c : c) || x.id.localeCompare(y.id);
  });
  $('count').textContent = rows.length + ' of ' + population.length + ' samples';
- const shown = A.map((_,i) => i).filter(i => population.some(s => fraction(s,i) >= .002));
+ const shown = cols.map((_,i) => i).filter(i => population.some(s => fraction(s,cols[i]) >= .002));
  const applied = population.filter(s => s.fix).length;
- const protectedCount = population.filter(s => !s.fix && (s.par.length || s.kids.length)).length;
- let html = '<section aria-labelledby="pop-title"><div class="pophead"><h2 id="pop-title">' + escapeHTML(meta.name) + '</h2><p>' + escapeHTML(meta.pop + ' · ' + D.sup[meta.sup]) + ' · ' + population.length + ' samples' + (admixed.has(pop) ? ' · Gnofix applied to ' + applied + '; ' + protectedCount + ' family members excluded' : '') + '</p></div>';
- if (admixed.has(pop)) html += '<p class="phase-note">Trio and duo parents and children retain their published, pedigree-informed phase. Gnofix is not applied to these samples because correcting an already accurate phase can introduce errors.</p>';
+ const protectedCount = population.filter(s => !s.fix && s.par.length === 2).length;
+ let html = '<section aria-labelledby="pop-title"><div class="pophead"><h2 id="pop-title">' + escapeHTML(meta.name) + '</h2><p>' + escapeHTML(meta.pop + ' · ' + D.sup[meta.sup]) + ' · ' + population.length + ' samples' + (admixed.has(pop) ? ' · Gnofix applied to ' + applied + '; ' + protectedCount + ' trio children excluded' : '') + '</p></div>';
+ if (admixed.has(pop)) html += '<p class="phase-note">Trio children retain their published phase: it was made with both parents and is near-exact, so Gnofix could only add errors. All other samples get Gnofix, including trio parents and duo members, whose published phase is no better than that of unrelated samples.</p>';
  if (!rows.length) html += '<div class="empty"><h2>No samples match</h2><p>Change the sample ID search or uncheck Hide trios.</p></div>';
  else {
-  html += '<div class="table-wrap" role="region" aria-label="Sample ancestry table" tabindex="0"><table><caption>Global ancestry (% of genetic length). Values below 0.2% are omitted (—). Select a sample ID to open its karyogram; select a column heading to sort.</caption><thead><tr>' + heading('id','Sample ID') + shown.map(i => heading('a'+i, A[i].code, true, 'Sort by ' + A[i].name)).join('') + '<th scope="col">Relationship</th><th scope="col">Gnofix</th></tr></thead><tbody>';
+  html += '<div class="table-wrap" role="region" aria-label="Sample ancestry table" tabindex="0"><table><caption>Global ancestry (% of genetic length). Values below 0.2% are omitted (—). Select a sample ID to open its karyogram; select a column heading to sort.</caption><thead><tr>' + heading('id','Sample ID') + shown.map(i => heading('a'+i, cols[i].label, true, 'Sort by ' + cols[i].label + ' (' + cols[i].codes + ')')).join('') + '<th scope="col"><span class="plain-head">Relationship</span></th><th scope="col"><span class="plain-head">Gnofix</span></th></tr></thead><tbody>';
   rows.forEach(s => {
    html += '<tr><td><a class="sample-link" href="#sample=' + encodeURIComponent(s.id) + '" data-id="' + escapeHTML(s.id) + '">' + escapeHTML(s.id) + '</a></td>' + shown.map(i => {
-    const value = fraction(s,i);
+    const value = fraction(s,cols[i]);
     return '<td class="num' + (value < .002 ? ' below' : '') + '">' + (value >= .002 ? (100*value).toFixed(1) + '%' : '—') + '</td>';
    }).join('') + '<td class="relationship">' + family(s).map(escapeHTML).join('<br>') + '</td><td class="phase' + (s.fix ? ' applied' : '') + '" title="' + escapeHTML(phaseDetail(s)) + '">' + phase(s) + '</td></tr>';
   });
-  html += '</tbody></table></div><p style="margin:10px 0 0;font-size:12px;color:var(--muted)">' + shown.map(i => escapeHTML(A[i].code + ': ' + A[i].name)).join(' · ') + '</p>';
+  html += '</tbody></table></div>';
  }
  $('list').innerHTML = html + '</section>';
  document.querySelectorAll('[data-key]').forEach(b => b.onclick = () => {
@@ -231,7 +244,8 @@ function show(id) {
  $('dlg-sub').textContent = meta.pop + ' · ' + family(s).join(', ') + ' · ' + phaseDetail(s);
  let body = imageHTML(s);
  if (s.m) body += '<a class="martin-link" target="_blank" rel="noopener" href="' + escapeHTML(D.martin_url.replace('{}',id)) + '">Compare with Martin et al. (2017) karyogram (PDF) ↗</a>';
- const relatives = [...s.par.map(p => [p,'Parent']), ...s.kids.map(k => [k,'Child'])];
+ const coParents = [...new Set(s.kids.flatMap(k => byId[k] ? byId[k].par : []))].filter(p => p !== s.id);
+ const relatives = [...s.par.map(p => [p,'Parent']), ...coParents.map(p => [p,'Other parent']), ...s.kids.map(k => [k,'Child'])];
  if (relatives.length) {
   body += '<section class="dlg-related"><h3>Family karyograms</h3>';
   relatives.forEach(([rid,rel]) => {
@@ -259,4 +273,4 @@ fillPops(); render();
 </body>
 </html>
 """.replace("REPO_URL", "https://github.com/human-genomics/gnomix-1000g").replace(
-    "RELEASE_URL", "https://github.com/human-genomics/gnomix-1000g/releases/tag/v1.0.0")
+    "RELEASE_URL", "https://github.com/human-genomics/gnomix-1000g/releases/tag/v1.1.0")

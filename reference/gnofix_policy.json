@@ -1,5 +1,5 @@
 {
-  "rule": "Decided per population (populations with at least 10 trio children; others follow their group). Gnofix is used if it lowers the continental haplotype ancestry error (AFR + AHG \u2192 AFR, EUR + WAS \u2192 EUR) versus the rephased baseline by at least 0.005 (mean over children; paired one-sided Wilcoxon p < 0.01). The same samples get Gnofix phase in the corrected panel. Samples whose published phase used pedigree information always keep it.",
+  "rule": "Decided per population (populations with at least 10 trio children; others follow their group). Gnofix is used if it lowers the continental haplotype ancestry error (AFR + AHG \u2192 AFR, EUR + WAS \u2192 EUR) versus the rephased baseline by at least 0.005 (mean over children; paired one-sided Wilcoxon p < 0.01). The same samples get Gnofix phase in the corrected panel. Trio children always keep their published phase (phased with both parents); trio parents and duo members follow their population.",
   "apply_gnofix": {
     "AFR-American": true,
     "AMR": true,

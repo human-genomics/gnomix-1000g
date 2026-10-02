@@ -3,10 +3,10 @@
 Each chromosome is drawn as two vertical bars, one per homolog (A, B). The
 homolog order is arbitrary: A and B are not maternal and paternal. Colours are
 the final ancestry calls (the calls of tracts_final); coordinates are GRCh38.
-Opacity follows the posterior of the displayed category (for West Eurasian:
+Opacity follows the posterior of the displayed category (for European + West Asian:
 P(EUR) + P(WAS)): 1.0 at >= 0.9, 0.95 at 0.8, 0.72 at 0.6, 0.5 at <= 0.35.
-Admixed populations (ACB, ASW, CLM, MXL, PEL, PUR) show EUR + WAS as one West
-Eurasian category, because the model separates them poorly, and the rare EAS,
+Admixed populations (ACB, ASW, CLM, MXL, PEL, PUR) show EUR + WAS as one
+"European + West Asian" category, because the model separates them poorly, and the rare EAS,
 SAS, AHG and OCE calls as "Other". Karyograms are redrawn when the calls or the
 Gnofix policy change, or with REDRAW=1.
 
@@ -87,7 +87,7 @@ def categories(population: str) -> list[tuple[str, str, list[int]]]:
     one = lambda a: [(f"{ANCESTRY_NAMES[a]} ({a})", ANCESTRY_COLORS[a], [code[a]])]  # noqa: E731
     if population in ADMIXED_POPULATIONS:
         # Three sources plus "other": four colours that stay distinct for colour-blind readers.
-        return (one("AFR") + [("West Eurasian (EUR + WAS)", WEST_EURASIAN, [code["EUR"], code["WAS"]])]
+        return (one("AFR") + [("European + West Asian", WEST_EURASIAN, [code["EUR"], code["WAS"]])]
                 + one("NAT") + [("Other (EAS, SAS, AHG, OCE)", OTHER,
                                  [code["EAS"], code["SAS"], code["AHG"], code["OCE"]])])
     return sum((one(a) for a in ("AFR", "AHG", "EUR", "WAS", "SAS", "EAS", "NAT", "OCE")), [])

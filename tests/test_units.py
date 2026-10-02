@@ -13,13 +13,14 @@ import pytest
 from gnomix1000g.common import ANCESTRIES, REFERENCE, chrom_list, group_of
 from gnomix1000g.infer import window_of_snp
 from gnomix1000g.liftover import Chain, complement
+from gnomix1000g.pedigree import family_pairs, pair_switches, switches
 from gnomix1000g.pfile import apply_swaps, nearest_window
 from gnomix1000g.prepare import match_snps
 from gnomix1000g.tracts import (haplotype_tracts, hg38_discordant, hg38_span, label_runs, longest_increasing,
-                                policy_applies, window_lengths_cm)
+                                pedigree_phased, policy_applies, window_lengths_cm)
 
 MODULES = ["common", "liftover", "prepare", "haplotypes", "checks", "infer", "trio", "tracts", "karyogram",
-           "compare", "pfile", "figures", "report", "release", "__main__"]
+           "compare", "pfile", "figures", "report", "release", "pedigree", "__main__"]
 
 
 @pytest.mark.parametrize("name", MODULES)
@@ -269,3 +270,36 @@ def test_category_runs():
     from gnomix1000g.figures import _category_runs
     to_cat = np.array([0, 1, 1, 2, 0, 0, 0, 0])  # ancestries 1 and 2 shown as one category
     assert _category_runs(np.array([[1, 2, 1, 3], [0, 0, 0, 0]]), to_cat) == 2 + 1
+
+
+def test_switches_ignore_short_runs():
+    assert switches(np.zeros(50, dtype=np.int8)) == 0
+    blip = np.r_[np.zeros(30), np.ones(3), np.zeros(30)].astype(np.int8)
+    assert switches(blip) == 0
+    two = np.r_[np.zeros(25), np.ones(25), np.zeros(25)].astype(np.int8)
+    assert switches(two) == 2
+
+
+def test_pair_switches_child_exact_parent_switched():
+    rng = np.random.default_rng(0)
+    n = 4000
+    gp = rng.integers(0, 2, size=(2, n)).astype(np.int8)  # the parent's two true haplotypes
+    other = rng.integers(0, 2, size=n).astype(np.int8)
+    child = np.stack([gp[0], other])  # child got the parent's haplotype 0, no crossover
+    parent = gp.copy()
+    cut = n // 2  # published parent phase switched halfway
+    parent[:, cut:] = parent[::-1, cut:]
+    cs, cn, ps, pn = pair_switches(child, parent)
+    assert (cs, ps) == (0, 1) and cn > 0 and pn > 0
+    cs, _, ps, _ = pair_switches(child, gp)
+    assert (cs, ps) == (0, 0)
+
+
+def test_only_trio_children_keep_their_phase():
+    s = pd.DataFrame({"IID": ["mom", "dad", "kid", "duo_par", "duo_kid", "x"],
+                      "PAT": ["0", "0", "dad", "0", "duo_par", "0"], "MAT": ["0", "0", "mom", "0", "0", "0"],
+                      "Population": "ACB", "trio_child": [False, False, True, False, False, False]})
+    assert pedigree_phased(s).tolist() == [False, False, True, False, False, False]
+    pairs = family_pairs(s)
+    assert sorted(zip(pairs.child, pairs.parent, pairs.kind)) == [
+        ("duo_kid", "duo_par", "duo"), ("kid", "dad", "trio"), ("kid", "mom", "trio")]

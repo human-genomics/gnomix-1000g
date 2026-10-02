@@ -4,8 +4,9 @@ Three call sets exist for every haplotype window (see infer.py):
   raw     the pretrained model on the published 1000 Genomes phase
   gnofix  after Gnofix phase correction
   final   per sample, gnofix or raw according to output/validation/gnofix_policy.json.
-          Samples whose phase used pedigree information (trio or duo members)
-          always keep the raw call.
+          Trio children always keep the raw call: the panel phased them with
+          both parents. Their parents and duo members get the population's
+          decision like everyone else (validation/pedigree_phase_*.tsv).
 
 Coordinates: the model works on GRCh37 SNP positions, so windows are defined in
 GRCh37. Each window also gets GRCh38 coordinates from its lifted SNPs; windows
@@ -48,7 +49,12 @@ def sample_group(samples: pd.DataFrame) -> list[str]:
 
 
 def pedigree_phased(samples: pd.DataFrame) -> np.ndarray:
-    return (samples.has_parent_in_panel | samples.has_child_in_panel).values
+    """Samples whose published phase is pedigree-exact: trio children (both parents in the panel).
+
+    Parents and duo members are not: their phase switches as often as a statistical phase
+    (pedigree.py), so Gnofix can help them as it helps unrelated samples.
+    """
+    return samples.trio_child.values.astype(bool)
 
 
 def policy_applies(policy: dict, samples: pd.DataFrame) -> np.ndarray:

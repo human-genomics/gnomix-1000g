@@ -5,7 +5,7 @@ exchanged (work/infer/chrN.npz, "swap"). Here we apply the same exchanges to
 every variant of the panel, not only to the model SNPs:
 
   - Corrections are applied to exactly the samples whose final tracts use
-    Gnofix (never trio or duo members), so haplotypes 1 and 2 of this panel are
+    Gnofix (never trio children), so haplotypes 1 and 2 of this panel are
     haplotypes A and B of the tracts and karyograms. Other samples are copied.
   - Each variant takes the swap state of the window of its nearest lifted model
     SNP (GRCh38). This does not assume that liftover keeps window order.

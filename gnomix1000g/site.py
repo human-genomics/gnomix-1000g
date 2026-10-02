@@ -17,7 +17,7 @@ from .common import ANCESTRIES, ANCESTRY_COLORS, ANCESTRY_NAMES, OUTPUT, REFEREN
 SITE = OUTPUT / "site"
 MARTIN_URL = "https://personal.broadinstitute.org/armartin/tgp_admixture/karyograms/{}.pdf"
 REPO_URL = "https://github.com/human-genomics/gnomix-1000g"
-RELEASE_URL = f"{REPO_URL}/releases/tag/v1.0.0"
+RELEASE_URL = f"{REPO_URL}/releases/tag/v1.1.0"
 
 SUPERPOP_NAMES = {"AFR": "African", "AMR": "Admixed American", "EAS": "East Asian",
                   "EUR": "European", "SAS": "South Asian"}

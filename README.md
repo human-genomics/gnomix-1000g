@@ -4,10 +4,10 @@ The published pretrained [Gnomix](https://github.com/AI-sandbox/gnomix) model, w
 
 - **Output:** ancestry tracts per haplotype (GRCh38 and GRCh37), Gnomix `.msp` files, global ancestry, a karyogram for each sample, and a phase-corrected PLINK 2 panel.
 - **Model:** pretrained Gnomix with 8 ancestries. After liftover to GRCh38, 22.1 M of its 23.2 M SNPs (95.5%) are in the panel.
-- **Phase correction:** Gnofix re-orders haplotype segments so that ancestry is continuous along each haplotype. A benchmark on 603 trio children shows where this helps: all six admixed populations (ACB, ASW, CLM, MXL, PEL, PUR). Tracts, karyograms and the phase-corrected panel all use the same haplotypes.
-- **Validation:** compared with Martin et al. (2017) and the 1000 Genomes Phase 1 local ancestry: global ancestry r = 0.97-1.00, diploid local ancestry agreement 84-90%.
+- **Phase correction:** Gnofix re-orders haplotype segments so that ancestry is continuous along each haplotype. A benchmark on 603 trio children shows where this helps: all six admixed populations (ACB, ASW, CLM, MXL, PEL, PUR). There it is used for every sample except the trio children, whose published phase was made with both parents. Tracts, karyograms and the phase-corrected panel all use the same haplotypes.
+- **Validation:** compared with Martin et al. (2017) and the 1000 Genomes Phase 1 local ancestry: global ancestry r = 0.97-1.00, diploid local ancestry agreement 90-93%.
 
-**[Browse every sample's karyogram](https://human-genomics.github.io/gnomix-1000g/)** — select a superpopulation and population to see global ancestry, trio/duo relationships and Gnofix status. Hide trios if needed, switch between light and dark themes, and open any sample to view its karyogram alongside its relatives. The table combines European and West Asian ancestry as Western Eurasian (EUR + WAS); values below 0.2% are omitted.
+**[Browse every sample's karyogram](https://human-genomics.github.io/gnomix-1000g/)** — select a superpopulation and population to see global ancestry, trio/duo relationships and Gnofix status. Hide trios if needed, switch between light and dark themes, and open any sample to view its karyogram alongside its relatives. Columns use the ancestry names of the Gnomix paper. European and West Asian are shown separately for the European and South Asian superpopulations and combined (European + West Asian) elsewhere; values below 0.2% are omitted. Opening a trio parent shows the other parent and the child as well.
 
 Karyograms in the style of [ancestry_pipeline](https://github.com/armartin/ancestry_pipeline) (Martin et al. 2017).
 
@@ -17,32 +17,32 @@ Karyograms in the style of [ancestry_pipeline](https://github.com/armartin/ances
 
 More: [HG01893 (PEL; Martin et al. 2017, Fig. 1)](docs/karyogram_PEL_HG01893.png), [NA20412 (ASW)](docs/karyogram_ASW_NA20412.png), [HG01089 (PUR)](docs/karyogram_PUR_HG01089.png).
 
-Gnofix on NA20289 (ASW), a sample it changed more than average: phase switch errors cut the ancestry tracts into pieces; Gnofix joins them (chromosome 12: 232 → 57 tracts).
+Gnofix on NA19752 (MXL), a sample it changed more than average: phase switch errors cut the ancestry tracts into pieces; Gnofix joins them (chromosome 1: 128 → 40 tracts).
 
 ![Gnofix before and after](docs/gnofix_example.png)
 
 ## Download the outputs (no run needed)
 
-The outputs are attached to the [v1.0.0 release](https://github.com/human-genomics/gnomix-1000g/releases/tag/v1.0.0).
+The outputs are attached to the [v1.1.0 release](https://github.com/human-genomics/gnomix-1000g/releases/tag/v1.1.0). v1.1.0 applies Gnofix to trio parents and duo members, which v1.0.0 had left on their published phase ([why](#which-samples-keep-their-published-phase)).
 
 | Asset | Size | Content |
 |---|---:|---|
-| `tracts_final.tsv.gz` | 93 MB | Ancestry tracts, final calls (format below) |
+| `tracts_final.tsv.gz` | 86 MB | Ancestry tracts, final calls (format below) |
 | `tracts_raw.tsv.gz`, `tracts_gnofix.tsv.gz` | 159 MB | Tracts without and with Gnofix, all samples |
 | `global_ancestry.tar.gz` | 407 kB | Global ancestry per sample and population |
-| `karyograms.zip` | 467 MB | One karyogram per sample (PNG) |
+| `karyograms.zip` | 459 MB | One karyogram per sample (PNG) |
 | `bed_hg38.tar.gz` | 104 MB | Tracts as BED files per haplotype (ancestry_pipeline format) |
-| `msp.tar` | 43 MB | Gnomix `.msp` files and window tables |
-| `posteriors.tar` | 198 MB | Posterior per haplotype, window and ancestry |
+| `msp.tar` | 42 MB | Gnomix `.msp` files and window tables |
+| `posteriors.tar` | 193 MB | Posterior per haplotype, window and ancestry |
 | `chrN_gnofix.{pgen.zst,pvar.zst,psam}` | 4.0 GB | Phase-corrected panel, 66 files |
-| `pfile_swaps.tsv.gz`, `pfile_verification.json` | 655 kB | Where the panel phase was changed; read-back check |
+| `pfile_swaps.tsv.gz`, `pfile_verification.json` | 1.8 MB | Where the panel phase was changed; read-back check |
 | `gnofix_switches.tsv.gz` | 15 MB | Gnofix switch points, all samples |
-| `validation.tar.gz`, `REPORT.md` | 202 kB | Benchmark, comparisons, report |
+| `validation.tar.gz`, `REPORT.md` | 222 kB | Benchmark, comparisons, report |
 | `SHA256SUMS` | 7 kB | Checksums |
 
 ```bash
-curl -fsSLO https://github.com/human-genomics/gnomix-1000g/releases/download/v1.0.0/SHA256SUMS
-curl -fsSLO https://github.com/human-genomics/gnomix-1000g/releases/download/v1.0.0/tracts_final.tsv.gz
+curl -fsSLO https://github.com/human-genomics/gnomix-1000g/releases/download/v1.1.0/SHA256SUMS
+curl -fsSLO https://github.com/human-genomics/gnomix-1000g/releases/download/v1.1.0/tracts_final.tsv.gz
 sha256sum -c --ignore-missing SHA256SUMS
 ```
 
@@ -96,9 +96,9 @@ One row per tract: a run of windows with the same ancestry on one haplotype.
 | NA19752 | A | 1 | 1583061 | 4694257 | 1518441 | 4754317 | 3.248 | 11.363 | EUR | 27 | 0.685 |
 
 - `haplotype`: `A` or `B`, the first or second allele of the phased genotypes (not maternal or paternal).
-- `ancestry`: `AFR` (African), `AHG` (African hunter-gatherer), `EUR` (European), `WAS` (West Asian), `SAS` (South Asian), `EAS` (East Asian), `NAT` (Native American), `OCE` (Oceanian).
+- `ancestry`: `AFR` (African), `AHG` (African Hunter-Gatherer), `EUR` (European), `WAS` (West Asian), `SAS` (South Asian), `EAS` (East Asian), `NAT` (Indigenous American), `OCE` (Oceanian), as named in the Gnomix paper.
 - Positions: first and last model SNP of the tract, 1-based. The model windows are defined in GRCh37. GRCh38 positions are lifted; `-1` where liftover reverses, stretches or reorders the windows.
-- `tracts_final` uses Gnofix for ACB, ASW, CLM, MXL, PEL and PUR, except for trio and duo members (samples phased with a parent or child in the panel), which keep their published phase. `tracts_raw` (no Gnofix) and `tracts_gnofix` (Gnofix) give both versions for all samples.
+- `tracts_final` uses Gnofix for ACB, ASW, CLM, MXL, PEL and PUR, except for trio children (both parents in the panel), which keep their published phase. Trio parents, duo parents and duo children get Gnofix. `tracts_raw` (no Gnofix) and `tracts_gnofix` (Gnofix) give both versions for all samples.
 
 ### Other outputs
 
@@ -127,7 +127,7 @@ One row per tract: a run of windows with the same ancestry on one haplotype.
    | Random 20% | 44.7% | 99.9% |
 
 4. **Inference.** Unmodified Gnomix (commit `cd15f65`) with the library versions the models were saved with (scikit-learn 1.0.1, xgboost 1.1.1), without and with Gnofix for every sample. Upstream Gnofix swaps the wrong SNPs on chr6, 7, 8, 19 and 21 (window remainder bug); we rebuild the corrected haplotypes from Gnofix's record of swapped windows.
-5. **Where Gnofix is used.** Trio children were phased with their parents, so their phase is the truth. We remove it and phase each child again with Beagle 5.5 without its family ("rephased": the phase quality of an unrelated sample), on chr18-22. Gnofix is used for a population (≥ 10 trio children) if it lowers the continental haplotype ancestry error by ≥ 0.5 percentage points (paired one-sided Wilcoxon p < 0.01). Continental error: fraction of genetic length where a haplotype's call differs from the call on the true phase, after merging AFR + AHG → AFR and EUR + WAS → EUR.
+5. **Where Gnofix is used.** Trio children were phased with their parents, so their phase is the truth. We remove it and phase each child again with Beagle 5.5 without its family ("rephased": the phase quality of an unrelated sample), on chr18-22. Gnofix is used for a population (≥ 10 trio children) if it lowers the continental haplotype ancestry error by ≥ 0.5 percentage points (paired one-sided Wilcoxon p < 0.01). In those populations, every sample gets Gnofix except the trio children ([below](#which-samples-keep-their-published-phase)). Continental error: fraction of genetic length where a haplotype's call differs from the call on the true phase, after merging AFR + AHG → AFR and EUR + WAS → EUR.
 
 ## Validation
 
@@ -158,12 +158,23 @@ One row per tract: a run of windows with the same ancestry on one haplotype.
   | CLM | 0.27% → 0.33% | 83% → 77% | 56% → 58% | 55% → 60% |
   | PUR | 0.26% → 0.32% | 84% → 77% | 58% → 57% | 57% → 59% |
 
-- **Gnofix on the true phase** adds 2 (AFR, EAS) to 124 (EUR) switches per child, because noisy EUR, WAS and SAS calls look like ancestry changes. Trio and duo members therefore keep their pedigree-based phase.
+- **Gnofix on the true phase** adds 2 (AFR, EAS) to 124 (EUR) switches per child, because noisy EUR, WAS and SAS calls look like ancestry changes. Samples whose published phase is already exact therefore keep it.
 - **Reruns differ slightly.** Beagle's multithreaded phasing is not bit-identical between runs. An earlier run gave the same decisions except PUR (error 13.2% → 11.6%, p = 0.047). Gnofix lowered PUR's error in both runs; the table is the from-scratch Docker run.
 
 Full table: `reference/trio_benchmark_summary.tsv`.
 
 ![Trio benchmark](reference/trio_benchmark.png)
+
+### Which samples keep their published phase
+
+The panel was phased with its pedigrees, but only the trio children came out with an exact phase. For every parent-child pair in the panel we count phase switches at the model SNPs (chr18-22) that no meiosis explains; a switch counts if the new state holds for at least 20 informative sites (`validation/pedigree_phase_pairs.tsv`):
+
+| Pairs | Child: switches of the haplotype from this parent (exact: 0) | Parent: switches of the transmitted haplotype (exact: the crossovers, about 4.7) |
+|---|---:|---:|
+| 1,206 trio child-parent pairs | median 0 (98% have none) | median 117 (min 2) |
+| 8 duo child-parent pairs | median 0 (6 of 8 have none) | median 239 (min 44) |
+
+Trio parents and duo members thus have a statistical phase, like unrelated samples, and get Gnofix where their population does. Only trio children (both parents in the panel) keep their published phase: 170 of the 680 admixed samples (ACB 17%, ASW 18%, CLM 27%, MXL 33%, PEL 29%, PUR 25%). Release v1.0.0 also kept the parents and duo members on their published phase (76% of admixed samples).
 
 ### Martin et al. (2017)
 
@@ -173,14 +184,14 @@ Martin et al. used RFMix and ADMIXTURE (K = 3) on the 2,504 Phase 3 samples. The
 |---|---|---|---|
 | ACB | AFR | 0.88 (0.87-0.89) | 0.89 (0.88-0.91) |
 | ASW | AFR | 0.76 (0.73-0.78) | 0.77 (0.73-0.81) |
-| PEL | NAT | 0.77 (0.75-0.80) | 0.82 (0.79-0.85) |
-| MXL | NAT | 0.47 (0.43-0.50) | 0.56 (0.50-0.61) |
-| CLM | NAT | 0.26 (0.24-0.27) | 0.30 (0.28-0.33) |
-| PUR | NAT | 0.13 (0.12-0.13) | 0.16 (0.15-0.16) |
+| PEL | NAT | 0.77 (0.75-0.80) | 0.80 (0.77-0.83) |
+| MXL | NAT | 0.47 (0.43-0.50) | 0.53 (0.48-0.58) |
+| CLM | NAT | 0.26 (0.24-0.27) | 0.29 (0.27-0.31) |
+| PUR | NAT | 0.13 (0.12-0.13) | 0.15 (0.14-0.16) |
 
-- African ancestry agrees; Native American ancestry is 3-9 percentage points higher here.
-- Samples named in the paper: NA20314 (ASW, "no African ancestry") has 0.3% AFR. HG01880 (ACB) and HG01944 (PEL), outliers with "South or East Asian ancestry", have 26% SAS and 36% EAS.
-- A single-pulse estimate from tract lengths (continental labels, tracts > 2 cM) gives 19 generations since admixture for ACB and 16 for PEL; Martin et al. report 8 and 12. Tracts split by call noise bias our simple estimate upward (`validation/compare_martin2017_timing.tsv`).
+- African ancestry agrees; Indigenous American ancestry is 2-6 percentage points higher here.
+- Samples named in the paper: NA20314 (ASW, "no African ancestry") has 0.3% AFR. HG01880 (ACB) and HG01944 (PEL), outliers with "South or East Asian ancestry", have 30% SAS and 37% EAS.
+- A single-pulse estimate from tract lengths (continental labels, tracts > 2 cM) gives 13 generations since admixture for ACB and 9 for PEL; Martin et al. report 8 and 12. Tracts split by call noise and phase errors make this simple estimate unreliable (`validation/compare_martin2017_timing.tsv`).
 
 ### 1000 Genomes Phase 1 local ancestry
 
@@ -189,12 +200,12 @@ The Phase 1 admixture working group published per-sample tracts (consensus of LA
 | | AFR | EUR | NAT |
 |---|---:|---:|---:|
 | Samples | 231 | 231 | 177 |
-| Global ancestry, Pearson r | 0.9995 | 0.9722 | 0.9959 |
+| Global ancestry, Pearson r | 0.9995 | 0.9738 | 0.9976 |
 | Mean, Phase 1 | 23.9% | 53.1% | 30.0% |
-| Mean, this pipeline | 23.3% | 49.5% | 34.5% |
-| Mean absolute difference per sample | 1.1 pp | 3.8 pp | 4.5 pp |
+| Mean, this pipeline | 23.3% | 50.7% | 32.9% |
+| Mean absolute difference per sample | 1.0 pp | 2.7 pp | 3.0 pp |
 
-Diploid local ancestry (both homologs' calls, as a pair) agrees with Phase 1 for 88% (ASW), 88% (CLM), 84% (MXL), 90% (PUR) of the genetic length.
+Diploid local ancestry (both homologs' calls, as a pair) agrees with Phase 1 for 90% (ASW), 92% (CLM), 90% (MXL), 93% (PUR) of the genetic length.
 
 ![Comparison with Phase 1](docs/compare_phase1_global.png)
 

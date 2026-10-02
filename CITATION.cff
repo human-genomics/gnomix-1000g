@@ -1,8 +1,8 @@
 cff-version: 1.2.0
 message: "If you use these results or this pipeline, please cite it and the works it builds on (see README)."
 title: "gnomix-1000g: local ancestry for all 3,202 high-coverage 1000 Genomes samples"
-version: 1.0.0
-date-released: 2026-10-01
+version: 1.1.0
+date-released: 2026-10-02
 license: MIT
 repository-code: "https://github.com/human-genomics/gnomix-1000g"
 authors:

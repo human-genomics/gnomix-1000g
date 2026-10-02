@@ -23,7 +23,9 @@ Decision. Per population with at least MIN_CHILDREN trio children; other
 populations follow their group (AMR, AFR-American, AFR, EUR, EAS, SAS). Gnofix
 is used if it lowers the continental haplotype ancestry error (AFR + AHG → AFR,
 EUR + WAS → EUR) versus R by at least MIN_GAIN, with paired one-sided
-Wilcoxon p < 0.01. The same samples get Gnofix phase in the corrected panel, so
+Wilcoxon p < 0.01. Trio children keep their published phase; their parents and
+duo members follow the decision (their published phase is statistical quality,
+see pedigree.py). The same samples get Gnofix phase in the corrected panel, so
 tracts and phased genotypes agree; switch errors and phase accuracy by distance
 are reported as the cost and gain of that choice. The 8-label error is reported
 too, but EUR-WAS label noise, which phase correction cannot fix, dominates it.
@@ -487,8 +489,8 @@ def summarize(df: pd.DataFrame) -> None:
                        "follow their group). Gnofix is used if it lowers the continental haplotype ancestry error "
                        f"(AFR + AHG → AFR, EUR + WAS → EUR) versus the rephased baseline by at least {MIN_GAIN:.3f} "
                        f"(mean over children; paired one-sided Wilcoxon p < {P_MAX}). The same samples get Gnofix "
-                       "phase in the corrected panel. Samples whose published phase used pedigree information "
-                       "always keep it."),
+                       "phase in the corrected panel. Trio children always keep their published phase (phased "
+                       "with both parents); trio parents and duo members follow their population."),
               "apply_gnofix": {r.group: r.gnofix for r in summ.itertuples() if r.level == "group"},
               "apply_gnofix_population": {r.group: r.gnofix for r in summ.itertuples() if r.level == "population"},
               "chromosomes": sorted(int(c) for c in df.chrom.unique()),

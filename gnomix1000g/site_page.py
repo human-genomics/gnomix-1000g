@@ -181,7 +181,10 @@ function render() {
   });
   $("list").innerHTML = html || '<p class="note">No samples match.</p>';
   document.querySelectorAll("th[data-k]").forEach(th => {
-    if (th.dataset.k === state.sort) th.classList.add("sorted", state.desc ? "" : "asc");
+    if (th.dataset.k === state.sort) {
+      th.classList.add("sorted");
+      if (!state.desc) th.classList.add("asc");
+    }
     th.onclick = () => {
       if (state.sort === th.dataset.k) state.desc = !state.desc;
       else { state.sort = th.dataset.k; state.desc = true; }

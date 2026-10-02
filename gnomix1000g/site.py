@@ -1,9 +1,8 @@
 """Build the browsable karyogram site (`site` step) for GitHub Pages.
 
 Writes output/site/: index.html, data.js and karyograms/<POP>/<IID>.png (copied from output/karyograms).
-The page lists every sample with its global ancestry, groups populations into super-populations, sorts by
-any ancestry fraction, shows karyograms without leaving the page, keeps trios together, and links the
-matching karyogram from Martin et al. (2017) where one exists.
+The page browses one population at a time, with global ancestry, explicit pedigree relationships and
+Gnofix status. Sample links open karyograms and their relatives without leaving the page.
 """
 
 from __future__ import annotations
@@ -11,10 +10,9 @@ from __future__ import annotations
 import json
 import shutil
 
-import numpy as np
 import pandas as pd
 
-from .common import ANCESTRIES, ANCESTRY_COLORS, ANCESTRY_NAMES, OUTPUT, REFERENCE, atomic_path, log
+from .common import ANCESTRIES, ANCESTRY_COLORS, ANCESTRY_NAMES, OUTPUT, REFERENCE, WORK, atomic_path, log
 
 SITE = OUTPUT / "site"
 MARTIN_URL = "https://personal.broadinstitute.org/armartin/tgp_admixture/karyograms/{}.pdf"
@@ -53,6 +51,15 @@ def sample_rows(glob: pd.DataFrame, samples: pd.DataFrame, martin: set) -> list[
             children.setdefault(p, []).append(kid)
     for r in rows:
         r["kids"] = children.get(r["id"], [])
+    by_id = {r["id"]: r for r in rows}
+    for r in rows:
+        roles = []
+        if r["par"]:
+            roles.append("Trio child" if len(r["par"]) == 2 else "Duo child")
+        for size, label in ((2, "Trio parent"), (1, "Duo parent")):
+            if any(len(by_id[k]["par"]) == size for k in r["kids"]):
+                roles.append(label)
+        r["family"] = roles or ["Unrelated"]
     return rows
 
 
@@ -74,7 +81,7 @@ def copy_karyograms() -> int:
 def run() -> None:
     SITE.mkdir(parents=True, exist_ok=True)
     glob = pd.read_csv(OUTPUT / "global_ancestry_final.tsv", sep="\t")
-    samples = pd.read_csv(OUTPUT.parent / "work" / "samples.tsv", sep="\t", dtype={"PAT": str, "MAT": str})
+    samples = pd.read_csv(WORK / "samples.tsv", sep="\t", dtype={"PAT": str, "MAT": str})
     martin = set()
     mf = REFERENCE / "martin2017_karyogram_samples.txt"
     if mf.exists():

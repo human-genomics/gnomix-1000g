@@ -7,7 +7,7 @@ The published pretrained [Gnomix](https://github.com/AI-sandbox/gnomix) model, w
 - **Phase correction:** Gnofix re-orders haplotype segments so that ancestry is continuous along each haplotype. A benchmark on 603 trio children shows where this helps: all six admixed populations (ACB, ASW, CLM, MXL, PEL, PUR). Tracts, karyograms and the phase-corrected panel all use the same haplotypes.
 - **Validation:** compared with Martin et al. (2017) and the 1000 Genomes Phase 1 local ancestry: global ancestry r = 0.97-1.00, diploid local ancestry agreement 84-90%.
 
-**[Browse every sample's karyogram](https://human-genomics.github.io/gnomix-1000g/)** — select a superpopulation and population to see global ancestry, trio/duo relationships and Gnofix status. Hide trios if needed, switch between light and dark themes, and open any sample to view its karyogram alongside its relatives. Ancestry values below 0.2% are omitted from the table.
+**[Browse every sample's karyogram](https://human-genomics.github.io/gnomix-1000g/)** — select a superpopulation and population to see global ancestry, trio/duo relationships and Gnofix status. Hide trios if needed, switch between light and dark themes, and open any sample to view its karyogram alongside its relatives. The table combines European and West Asian ancestry as Western Eurasian (EUR + WAS); values below 0.2% are omitted.
 
 Karyograms in the style of [ancestry_pipeline](https://github.com/armartin/ancestry_pipeline) (Martin et al. 2017).
 

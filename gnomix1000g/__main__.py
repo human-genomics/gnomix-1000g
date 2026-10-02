@@ -62,6 +62,11 @@ def _report(chroms, args):
     report.run(chroms)
 
 
+def _site(chroms, args):
+    from . import site
+    site.run()
+
+
 def _release(chroms, args):
     from . import release
     release.run(chroms)
@@ -77,6 +82,7 @@ STEPS = [
     ("compare", "Martin et al. (2017) and 1000 Genomes Phase 1", _compare, True),
     ("pfile", "phase-corrected panel", _pfile, True),
     ("report", "REPORT.md, figures, checksums", _report, True),
+    ("site", "browsable karyogram site (GitHub Pages)", _site, False),
     ("release", "release assets", _release, False),
 ]
 

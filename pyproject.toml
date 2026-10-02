@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gnomix1000g"
+dynamic = ["version", "dependencies"]
+description = "Local ancestry for the 1000 Genomes high-coverage panel with pretrained Gnomix and Gnofix"
+readme = "README.md"
+requires-python = ">=3.9,<3.11"
+license = { text = "MIT" }
+authors = [{ name = "human-genomics" }]
+
+[project.urls]
+Homepage = "https://github.com/human-genomics/gnomix-1000g"
+Issues = "https://github.com/human-genomics/gnomix-1000g/issues"
+
+[tool.setuptools]
+packages = ["gnomix1000g"]
+
+[tool.setuptools.dynamic]
+version = { attr = "gnomix1000g.__version__" }
+dependencies = { file = ["requirements.txt"] }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

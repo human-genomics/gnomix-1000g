@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use these results or this pipeline, please cite it and the works it builds on (see README)."
+title: "gnomix-1000g: local ancestry for all 3,202 high-coverage 1000 Genomes samples"
+version: 1.0.0
+date-released: 2026-10-01
+license: MIT
+repository-code: "https://github.com/human-genomics/gnomix-1000g"
+authors:
+  - name: "human-genomics"
+references:
+  - type: article
+    title: "Scalable high resolution ancestry deconvolution for genomic data"
+    authors:
+      - family-names: Hilmarsson
+        given-names: Helgi
+    journal: "Nature Communications"
+    year: 2026
+  - type: article
+    title: "High-coverage whole-genome sequencing of the expanded 1000 Genomes Project cohort including 602 trios"
+    authors:
+      - family-names: Byrska-Bishop
+        given-names: Marta
+    journal: "Cell"
+    year: 2022
+    doi: 10.1016/j.cell.2022.08.004
+  - type: article
+    title: "Human demographic history impacts genetic risk prediction across diverse populations"
+    authors:
+      - family-names: Martin
+        given-names: Alicia R.
+    journal: "American Journal of Human Genetics"
+    year: 2017

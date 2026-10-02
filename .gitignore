@@ -1,0 +1,15 @@
+# Downloaded inputs, intermediate files, outputs and local tools (recreated by main.sh)
+downloads/
+work/
+output/
+logs/
+tools/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Data folder suggested in the README; archived files
+gnomix-1000g-data/
+.stale/

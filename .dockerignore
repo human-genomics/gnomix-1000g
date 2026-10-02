@@ -1,0 +1,19 @@
+# Runtime data (downloaded or generated at run time)
+downloads/
+work/
+output/
+logs/
+tools/
+
+# Not needed in the image
+.git
+.github
+docs/
+tests/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Data folder suggested in the README
+gnomix-1000g-data/
+.stale/

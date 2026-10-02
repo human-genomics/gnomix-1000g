@@ -1,0 +1,12 @@
+# Samples named in Martin et al. (2017) AJHG 100:635-649, with the paper's statement (quoted or closely paraphrased).
+sample	population	source	statement	expectation
+NA20314	ASW	Material and Methods, Ancestry-Specific PCA	"one outlier (ASW individual NA20314) when analyzing the African tracts, which was expected as this individual has no African ancestry"	AFR near 0
+HG00731	PUR	Material and Methods, Ancestry-Specific PCA	outlier in European-tract AS-PCA: "minimal European ancestry, had South or East Asian ancestry misclassified as European ancestry ..., or were unexpected outliers"	check for unusual ancestry
+HG00732	PUR	Material and Methods, Ancestry-Specific PCA	outlier in European-tract AS-PCA (same statement)	check for unusual ancestry
+HG01880	ACB	Material and Methods, Ancestry-Specific PCA	outlier in European-tract AS-PCA (same statement)	check for unusual ancestry
+HG01882	ACB	Material and Methods, Ancestry-Specific PCA	outlier in European-tract AS-PCA (same statement)	check for unusual ancestry
+HG01944	PEL	Material and Methods, Ancestry-Specific PCA	outlier in European-tract AS-PCA (same statement)	check for unusual ancestry
+HG02497	ACB	Material and Methods, Ancestry-Specific PCA	outlier in European-tract AS-PCA (same statement)	check for unusual ancestry
+NA20320	ASW	Material and Methods, Ancestry-Specific PCA	outlier in European-tract AS-PCA (same statement)	check for unusual ancestry
+NA20321	ASW	Material and Methods, Ancestry-Specific PCA	outlier in European-tract AS-PCA (same statement)	check for unusual ancestry
+HG01893	PEL	Figure 1B, 1D, 1F	"Local ancestry karyograms for representative PEL individual HG01893"	mostly NAT with EUR and some AFR tracts

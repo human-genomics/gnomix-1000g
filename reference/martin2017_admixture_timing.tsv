@@ -1,0 +1,5 @@
+# Martin et al. (2017) p. 639-640: "we modeled the length distribution of the AFR, EUR, and NAT tracts to infer that
+# admixing began ~12 and ~8 generations ago in the PEL and ACB populations, respectively (Figure S5)". Tracts, RFMix.
+population	generations
+PEL	12
+ACB	8

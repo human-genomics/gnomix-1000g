@@ -1,0 +1,14 @@
+# Martin AR et al. (2017) Human demographic history impacts genetic risk prediction across diverse populations.
+# Am J Hum Genet 100:635-649. doi:10.1016/j.ajhg.2017.03.004. Main text p. 639:
+# "when compared to the ASW, the ACB have a higher proportion of African ancestry (m = 0.88, 95% CI = [0.87-0.89]
+#  versus m = 0.76, 95% CI = [0.73-0.78]) ... The PEL have more NAT ancestry than all of the other AMR populations
+#  (m = 0.77, 95% CI = [0.75-0.80] versus CLM: m = 0.26, 95% CI = [0.24, 0.27]; PUR: m = 0.13, 95% CI = [0.12, 0.13];
+#  and MXL: m = 0.47, 95% CI = [0.43, 0.50])". ADMIXTURE K=3 with YRI, CEU and NAT references (Figure 1A, Table S2);
+# RFMix global ancestry agreed with ADMIXTURE K=5 (Pearson r >= 98%, Figure S4). 1000 Genomes Phase 3 samples.
+population	ancestry	mean	ci_low	ci_high
+ACB	AFR	0.88	0.87	0.89
+ASW	AFR	0.76	0.73	0.78
+PEL	NAT	0.77	0.75	0.80
+CLM	NAT	0.26	0.24	0.27
+PUR	NAT	0.13	0.12	0.13
+MXL	NAT	0.47	0.43	0.50

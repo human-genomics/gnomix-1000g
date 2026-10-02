@@ -136,7 +136,13 @@ dialog::backdrop { background:rgba(0,0,0,.65); }
 </dialog>
 <script src="data.js"></script>
 <script>
-const D = window.DATA, A = D.anc, byId = Object.fromEntries(D.samples.map(s => [s.id, s]));
+const D = window.DATA, byId = Object.fromEntries(D.samples.map(s => [s.id, s]));
+const A = D.anc.flatMap((a,i) => {
+ if (a.code === 'WAS') return [];
+ if (a.code === 'EUR') return [{code:'Western Eurasian', name:'European + West Asian (EUR + WAS)', indices:[i,D.anc.findIndex(a => a.code === 'WAS')]}];
+ return [{...a, indices:[i]}];
+});
+function fraction(s,i) { return A[i].indices.reduce((total,index) => total + s.a[index], 0); }
 const $ = id => document.getElementById(id);
 const supSel = $('sup'), popSel = $('pop');
 const admixed = new Set(['ACB','ASW','CLM','MXL','PEL','PUR']);
@@ -184,11 +190,11 @@ function render() {
  const q = $('q').value.trim().toUpperCase();
  const rows = population.filter(s => (!q || s.id.toUpperCase().includes(q)) && (!$('hide-trios').checked || !family(s).some(r => r.startsWith('Trio'))));
  rows.sort((x,y) => {
-  const c = state.sort === 'id' ? x.id.localeCompare(y.id) : x.a[+state.sort.slice(1)] - y.a[+state.sort.slice(1)];
+  const c = state.sort === 'id' ? x.id.localeCompare(y.id) : fraction(x,+state.sort.slice(1)) - fraction(y,+state.sort.slice(1));
   return (state.desc ? -c : c) || x.id.localeCompare(y.id);
  });
  $('count').textContent = rows.length + ' of ' + population.length + ' samples';
- const shown = A.map((_,i) => i).filter(i => population.some(s => s.a[i] >= .002));
+ const shown = A.map((_,i) => i).filter(i => population.some(s => fraction(s,i) >= .002));
  const applied = population.filter(s => s.fix).length;
  const protectedCount = population.filter(s => !s.fix && (s.par.length || s.kids.length)).length;
  let html = '<section aria-labelledby="pop-title"><div class="pophead"><h2 id="pop-title">' + escapeHTML(meta.name) + '</h2><p>' + escapeHTML(meta.pop + ' · ' + D.sup[meta.sup]) + ' · ' + population.length + ' samples' + (admixed.has(pop) ? ' · Gnofix applied to ' + applied + '; ' + protectedCount + ' family members excluded' : '') + '</p></div>';
@@ -197,7 +203,10 @@ function render() {
  else {
   html += '<div class="table-wrap" role="region" aria-label="Sample ancestry table" tabindex="0"><table><caption>Global ancestry (% of genetic length). Values below 0.2% are omitted (—). Select a sample ID to open its karyogram; select a column heading to sort.</caption><thead><tr>' + heading('id','Sample ID') + shown.map(i => heading('a'+i, A[i].code, true, 'Sort by ' + A[i].name)).join('') + '<th scope="col">Relationship</th><th scope="col">Gnofix</th></tr></thead><tbody>';
   rows.forEach(s => {
-   html += '<tr><td><a class="sample-link" href="#sample=' + encodeURIComponent(s.id) + '" data-id="' + escapeHTML(s.id) + '">' + escapeHTML(s.id) + '</a></td>' + shown.map(i => '<td class="num' + (s.a[i] < .002 ? ' below' : '') + '">' + (s.a[i] >= .002 ? (100*s.a[i]).toFixed(1) + '%' : '—') + '</td>').join('') + '<td class="relationship">' + family(s).map(escapeHTML).join('<br>') + '</td><td class="phase' + (s.fix ? ' applied' : '') + '" title="' + escapeHTML(phaseDetail(s)) + '">' + phase(s) + '</td></tr>';
+   html += '<tr><td><a class="sample-link" href="#sample=' + encodeURIComponent(s.id) + '" data-id="' + escapeHTML(s.id) + '">' + escapeHTML(s.id) + '</a></td>' + shown.map(i => {
+    const value = fraction(s,i);
+    return '<td class="num' + (value < .002 ? ' below' : '') + '">' + (value >= .002 ? (100*value).toFixed(1) + '%' : '—') + '</td>';
+   }).join('') + '<td class="relationship">' + family(s).map(escapeHTML).join('<br>') + '</td><td class="phase' + (s.fix ? ' applied' : '') + '" title="' + escapeHTML(phaseDetail(s)) + '">' + phase(s) + '</td></tr>';
   });
   html += '</tbody></table></div><p style="margin:10px 0 0;font-size:12px;color:var(--muted)">' + shown.map(i => escapeHTML(A[i].code + ': ' + A[i].name)).join(' · ') + '</p>';
  }
